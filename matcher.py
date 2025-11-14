@@ -73,6 +73,10 @@ def main():
         names = args.participants.split(',')
         for name in names:
             participants.add(name)
+
+    if len(participants) <=1:
+        print("More than one participant is required.")
+        exit(1)
        
 
     matches = assign(participants=participants)
