@@ -22,9 +22,8 @@ def assign(participants):
 def write_matches_to_file(matches, output_directory_name):
     try:
         os.mkdir(output_directory_name)
-        print(f"Directory '{output_directory_name}' created successfully.")
     except FileExistsError:
-        print(f"Directory '{output_directory_name}' already exists.")
+        pass
     except PermissionError:
         print(f"Permission denied: Unable to create '{output_directory_name}'.")
     except Exception as e:
@@ -40,28 +39,34 @@ def write_matches_to_file(matches, output_directory_name):
 def main():
     parser = argparse.ArgumentParser(description="Secret Santa participant matcher")
 
-    group = parser.add_mutually_exclusive_group(required=True)
-
-    group.add_argument(
+    parser.add_argument(
         "participants",
         nargs="?",
         type=str,
         help="Comma-separated list of participants."
     )
 
-    group.add_argument(
+    parser.add_argument(
         "-f", "--file",
         type=str,
         help="Read participant list from file. One participant per line."
     )
 
-    group.add_argument(
+    parser.add_argument(
         "-o", "--output",
-        action="store_true",
-        help="Directory to output files."
-    )
-    
+        type=str,
+        help="Directory to output files.")
+        
     args = parser.parse_args()
+
+    # Enforce conditional requirement:
+    if not args.file and not args.participants:
+        parser.error("participants are required unless -f/--file is specified")
+
+    # Optional: If file IS provided, ignore participants (or enforce none)
+    if args.file and args.participants:
+        parser.error("participants cannot be used together with -f/--file")
+
 
     participants = set()
 
